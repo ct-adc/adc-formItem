@@ -2,7 +2,7 @@
   "name": "adc-formitem",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "guoding <371049740@qq.com>",
+  "author": "gd2016 <371049740@qq.com>",
   "private": false,
   "main": "lib/index.js",
   "scripts": {
