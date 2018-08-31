@@ -85,9 +85,16 @@
 </template>
 
 <script>
+import {DatesInput, DateInput} from 'ct-adc-date'; 
+import AutoComplete from 'ct-adc-auto-complete';
 import AsyncValidator from 'async-validator';
 export default {
     name: 'formItem',
+    components: {
+        DatesInput,
+        DateInput,
+        AutoComplete
+    },
     props: {
         rules: Array,          //单独的校验规则
         prop: [String, Array], //需要校验的字段
