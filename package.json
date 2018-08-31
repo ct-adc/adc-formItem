@@ -1,6 +1,6 @@
 {
   "name": "adc-formitem",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Vue.js project",
   "author": "gd2016 <371049740@qq.com>",
   "private": false,
@@ -11,7 +11,10 @@
     "umd": "webpack --config build/webpack.umd.conf.js",
     "lint": "eslint --ext .js,.vue src"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ct-adc-auto-complete": "^3.0.0",
+    "ct-adc-date": "^2.0.0-alpha.2"
+  },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.22.1",
@@ -62,10 +65,5 @@
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 3.0.0"
-  },
-  "browserlist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+  }
 }
