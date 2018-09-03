@@ -41,12 +41,16 @@ export default {
         validate(callback) {
             var valid = true;
             var count = 0;
+            let invalidFields = {};
 
             if (this.items.length){
                 this.items.forEach(field => {
-                    field.validate((message, invalidFields)=>{
+                    field.validate((message, field)=>{
                         if (message){
                             valid = false;
+                        }
+                        if (field){
+                            invalidFields = Object.assign({}, invalidFields, field);
                         }
                         if (typeof callback === 'function' && ++count === this.items.length) {
                             callback(valid, invalidFields);

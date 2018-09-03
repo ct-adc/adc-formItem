@@ -12,7 +12,7 @@
                     <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                             :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
                             <option value="" v-if="defaultSelect">请选择</option>
-                            <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.value]}}</option>
+                            <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
                     </select>
                     <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
                                  :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
@@ -48,13 +48,13 @@
                 <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                         :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
                         <option value="" v-if="defaultSelect">请选择</option>
-                        <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.value]}}</option>
+                        <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
                 </select>
                 <label v-if="type==='radio'" class="radio-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="item[valueKey.key]">{{item[valueKey.value]}}
+                    <input :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="item[valueKey.key]">{{item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'" class="checkbox-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :style="inputStyle" v-model="commonValue" type="checkbox" :value="item[valueKey.key]">{{item[valueKey.value]}}
+                    <input :style="inputStyle" v-model="commonValue" type="checkbox" :value="valueObject?item:item[valueKey.key]">{{item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'&&!list" class="checkbox-inline" @change="handleChange">
                     <input :style="inputStyle" v-model="commonValue" type="checkbox">&nbsp;
@@ -104,10 +104,6 @@ export default {
         inputStyle: Object,    //控件样式
         valueClass: String,    //value类名
         isStatic: Boolean,     //是否只读
-        value: {type: [String, Number, Object, Array, Boolean], default: ()=>{
-            if (this.type !== 'checkbox') return undefined;
-        }},                    //v-model绑定值
-        model: [String, Number, Object, Array], //自定义时，需要校验的绑定值
         type: String,          //表单项类型
         list: Array,           //选择框、单选框、复选框、模糊匹配列表
         disabled: Boolean,     //是否禁用
@@ -130,13 +126,16 @@ export default {
         matchKeys: Array,
         keys: Array,
         showKeys: Array,       
-        index: Number,
         required: Boolean,
+        value: {type: [String, Number, Object, Array, Boolean], default: ()=>{
+            if (this.type !== 'checkbox') return undefined;
+        }},                    //v-model绑定值
+        valueObject: Boolean,
         valueKey: {            //定义选择框、单选框、复选框的value key采用的字段名称
             type: Object, 
             default: ()=>{
                 return {
-                    key: 'key', value: 'val'
+                    key: 'key', val: 'val'
                 };
             }
         }
@@ -169,11 +168,12 @@ export default {
                 if (this.disabled || this.beginDisabled || this.endDisabled){
                     this.validateState = 'success';
                     this.validateMessage = '';
+                    callback(this.validateMessage);
                 } else {
                     this.validateState = !errors ? 'success' : 'error';
                     this.validateMessage = errors ? errors[0].message : '';
+                    callback(this.validateMessage, invalidFields);
                 }
-                callback(this.validateMessage, invalidFields);
                 if (!this.validated) this.validated = true; 
             });
         },
@@ -238,11 +238,8 @@ export default {
             }
             return parent;
         },
-        filedvalue(){ //当前表单项对应的值
+        filedvalue(){ //存在校验时需要校验对应的值
             if (!this.prop) return ;
-            if (typeof this.value === 'undefined'){
-                return this.model;
-            }
             return this.value;
         },
         isRequired(){ //是否为必填项
