@@ -12,8 +12,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "ct-adc-auto-complete": "^3.0.0",
-    "ct-adc-date": "^2.0.0-alpha.2"
+    "async-validator": "^1.8.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

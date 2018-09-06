@@ -2,7 +2,7 @@
     <div v-if="isSearch" class="col-sm-4 col-lg-3">
         <div class="form-group form-group-sm">
             <label class="control-label" :class="labelClass?labelClass:'col-sm-4'"><i v-if="isRequired" class="red">*</i>{{label}}</label>
-            <div class="col-sm-8" :class="{'has-error': validateState==='error'}">
+            <div :class="[{'has-error': validateState==='error'},valueClass?valueClass:'col-sm-8']">
                 <section :class="inputClass">
                     <input  v-if="type==='text'||type==='number'" :placeholder="placeholder"          
                             :maxlength="maxlength" :style="inputStyle"
@@ -11,8 +11,9 @@
                             />
                     <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                             :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
-                            <option value="" v-if="defaultSelect">请选择</option>
-                            <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
+                            <option value="" v-if="defaultSelect">{{defaultText?defaultText:'不限'}}</option>
+                            <option v-if="valueKey.key" v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
+                            <option v-if="!valueKey.key" v-for="(item,index) in list" :value="item" :key="index">{{item}}</option>
                     </select>
                     <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
                                  :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
@@ -47,17 +48,18 @@
                         @blur="handleBlur" @input="handleChange" @focus="handleFocus" ref="input" />
                 <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                         :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
-                        <option value="" v-if="defaultSelect">请选择</option>
-                        <option v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
+                        <option value="" v-if="defaultSelect">{{defaultText?defaultText:'请选择'}}</option>
+                        <option v-if="valueKey.key" v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
+                        <option v-if="!valueKey.key" v-for="(item,index) in list" :value="item" :key="index">{{item}}</option>
                 </select>
                 <label v-if="type==='radio'" class="radio-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="item[valueKey.key]">{{item[valueKey.val]}}
+                    <input :disabled="disabled" :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="item[valueKey.key]">{{item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'" class="checkbox-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :style="inputStyle" v-model="commonValue" type="checkbox" :value="valueObject?item:item[valueKey.key]">{{item[valueKey.val]}}
+                    <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox" :value="valueObject?item:item[valueKey.key]">{{item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'&&!list" class="checkbox-inline" @change="handleChange">
-                    <input :style="inputStyle" v-model="commonValue" type="checkbox">&nbsp;
+                    <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox">&nbsp;
                 </label>
                 <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
                             :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
@@ -109,6 +111,7 @@ export default {
         disabled: Boolean,     //是否禁用
         maxlength: [String, Number], //input最大长度限制
         defaultSelect: Boolean, //是否显示请选择一项
+        defaultText: String,
         placeholder: String,        
         beginPlaceholder: String, //dates组件placeholder
         endPlaceholder: String,  //dates组件placeholder
@@ -272,6 +275,7 @@ export default {
         filedvalue(val){
             if (this.trigger === 'blur') return;
             if (!val && !this.validated) return;
+            if (val instanceof Array && !val.length && !this.validated) return;
             this.validate(()=>{});   
         },
         value(val){

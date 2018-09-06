@@ -3,7 +3,7 @@
         <slot></slot>
         <div class="text-right">
             <hr/>
-            <div v-if="!$slots.footer">
+            <div v-if="!$slots.footer&&!isStatic">
                 <button :disabled="loading" type="button" @click="save" class="btn btn-primary mr20">
                     <i class="glyphicon mr5" :class="{'glyphicon-refresh':loading, rotate:loading, 'glyphicon-save':!loading}"></i>保存</button>
                 <button type="button" @click="cancel" class="btn btn-primary">取消</button>
@@ -17,7 +17,7 @@
             <div :class="wrapClass?wrapClass:'col-sm-11'" class="text-nowrap">
                 <slot></slot>
             </div>
-            <div class="text-right" :class="btnClass?btnClass:'col-sm-1'">
+            <div v-if="!noSearchBtn" class="text-right" :class="btnClass?btnClass:'col-sm-1'">
                 <div class="form-group form-group-sm">
                     <button :disabled="loading" @click="search" class="btn btn-sm btn-primary">
                         <i class="glyphicon" :class="{'glyphicon-refresh':loading, rotate:loading, 'glyphicon-search':!loading}"></i>
@@ -62,10 +62,6 @@ export default {
             }
         },
         resetFields() {
-            if (!this.model) {
-                console.warn('model is required for resetFields to work.');
-                return;
-            }
             this.items.forEach(field => {
                 field.resetField();
             });
@@ -81,11 +77,12 @@ export default {
         }
     },
     props: {
+        noSearchBtn: Boolean,
+        isStatic: Boolean,
         loading: Boolean,
         btnClass: String,
         wrapClass: String,
         searchForm: Boolean, //搜索用标志
-        model: [Object, Array],      //表单数据对象
         rules: Object       //校验具体规则
     },
     created() {
