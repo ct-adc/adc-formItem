@@ -17,7 +17,7 @@
             <div :class="wrapClass?wrapClass:'col-sm-11'" class="text-nowrap">
                 <slot></slot>
             </div>
-            <div v-if="!noSearchBtn" class="text-right" :class="btnClass?btnClass:'col-sm-1'">
+            <div v-if="searchBtn" class="text-right" :class="btnClass?btnClass:'col-sm-1'">
                 <div class="form-group form-group-sm">
                     <button :disabled="loading" @click="search" class="btn btn-sm btn-primary">
                         <i class="glyphicon" :class="{'glyphicon-refresh':loading, rotate:loading, 'glyphicon-search':!loading}"></i>
@@ -77,7 +77,7 @@ export default {
         }
     },
     props: {
-        noSearchBtn: Boolean,
+        searchBtn: {type: Boolean, default: true},
         isStatic: Boolean,
         loading: Boolean,
         btnClass: String,

@@ -12,8 +12,7 @@
                     <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                             :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
                             <option value="" v-if="defaultSelect">{{defaultText?defaultText:'不限'}}</option>
-                            <option v-if="valueKey.key" v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
-                            <option v-if="!valueKey.key" v-for="(item,index) in list" :value="item" :key="index">{{item}}</option>
+                            <option v-for="(item,index) in list" :value="keyItem?item:item[valueKey.key]" :key="index">{{valueItem?item:item[valueKey.val]}}</option>
                     </select>
                     <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
                                  :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
@@ -49,14 +48,13 @@
                 <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                         :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
                         <option value="" v-if="defaultSelect">{{defaultText?defaultText:'请选择'}}</option>
-                        <option v-if="valueKey.key" v-for="(item,index) in list" :value="item[valueKey.key]" :key="index">{{item[valueKey.val]}}</option>
-                        <option v-if="!valueKey.key" v-for="(item,index) in list" :value="item" :key="index">{{item}}</option>
+                        <option v-for="(item,index) in list" :value="keyItem?item:item[valueKey.key]" :key="index">{{valueItem?item:item[valueKey.val]}}</option>
                 </select>
                 <label v-if="type==='radio'" class="radio-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :disabled="disabled" :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="item[valueKey.key]">{{item[valueKey.val]}}
+                    <input :disabled="disabled" :style="inputStyle" :checked="value==item[valueKey.key]" name="radio" type="radio" :value="keyItem?item:item[valueKey.key]">{{valueItem?item:item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'" class="checkbox-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
-                    <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox" :value="valueObject?item:item[valueKey.key]">{{item[valueKey.val]}}
+                    <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox" :value="keyItem?item:item[valueKey.key]">{{valueItem?item:item[valueKey.val]}}
                 </label>
                 <label v-if="type==='checkbox'&&!list" class="checkbox-inline" @change="handleChange">
                     <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox">&nbsp;
@@ -133,7 +131,8 @@ export default {
         value: {type: [String, Number, Object, Array, Boolean], default: ()=>{
             if (this.type !== 'checkbox') return undefined;
         }},                    //v-model绑定值
-        valueObject: Boolean,
+        valueItem: Boolean,
+        keyItem: Boolean,
         valueKey: {            //定义选择框、单选框、复选框的value key采用的字段名称
             type: Object, 
             default: ()=>{
