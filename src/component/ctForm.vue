@@ -1,15 +1,16 @@
 <template>
     <form v-if="!searchForm" class="form-horizontal">
         <slot></slot>
-        <div class="text-right">
+        <div>
             <hr/>
-            <div v-if="!$slots.footer&&!isStatic">
+            <div :class="labelClass?labelClass:'col-sm-2'"></div>
+            <div :class="valueClass?valueClass:'col-sm-8'"  v-if="!$slots.footer&&!isStatic">
                 <button :disabled="loading" type="button" @click="save" class="btn btn-primary mr20">
                     <i class="glyphicon mr5" :class="{'glyphicon-refresh':loading, rotate:loading, 'glyphicon-save':!loading}"></i>保存</button>
-                <button type="button" @click="cancel" class="btn btn-primary">取消</button>
+                <button :disabled="loading" type="button" @click="cancel" class="btn btn-primary">取消</button>
                 <slot name="append"></slot>
             </div>
-            <slot name="footer"></slot>
+            <slot :class="valueClass?valueClass:'col-sm-8'" name="footer"></slot>
         </div>
     </form>
     <div v-else class="well well-sm clearfix">
@@ -79,6 +80,8 @@ export default {
     props: {
         searchBtn: {type: Boolean, default: true},
         isStatic: Boolean,
+        labelClass: String,
+        valueClass: String,
         loading: Boolean,
         btnClass: String,
         wrapClass: String,

@@ -15,7 +15,7 @@
                             <option v-for="(item,index) in list" :value="keyItem?item:item[valueKey.key]" :key="index">{{valueItem?item:item[valueKey.val]}}</option>
                     </select>
                     <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
-                                 :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
+                                 :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" :related="related"
                                  :beginDisabled="beginDisabled" :endDisabled="endDisabled" :valueReadable="valueReadable"
                                  :valueEndTransfered="valueEndTransfered"></dates-input>
                     <date-input v-if="type==='date'" v-model="datesValue" :placeholder="placeholder" @change="updateTime" 
@@ -37,7 +37,7 @@
             <i v-if="isRequired" class="red">*</i>{{label}}
         </label>
         <div v-if="isStatic" :class="[{'form-control-static':isStatic},valueClass?valueClass:'col-sm-10']">
-            {{value}}
+            <div v-html="value"></div>
             <slot></slot>
         </div>
         <div v-if="!isStatic" :class="[{'form-error': validateState==='error'},valueClass?valueClass:'col-sm-10']">
@@ -47,7 +47,7 @@
                         @blur="handleBlur" @input="handleChange" @focus="handleFocus" ref="input" />
                 <select v-if="type==='select'" class="form-control" :value="commonValue" @change="handleChange"
                         :disabled="disabled" v-bind="$attrs" ref="select" :style="inputStyle">
-                        <option value="" v-if="defaultSelect">{{defaultText?defaultText:'请选择'}}</option>
+                        <option  :value="defaultValue?defaultValue:''" v-if="defaultSelect">{{defaultText?defaultText:'请选择'}}</option>
                         <option v-for="(item,index) in list" :value="keyItem?item:item[valueKey.key]" :key="index">{{valueItem?item:item[valueKey.val]}}</option>
                 </select>
                 <label v-if="type==='radio'" class="radio-inline" v-for="(item,index) in list" :key="index" @change="handleChange">
@@ -60,7 +60,7 @@
                     <input :disabled="disabled" :style="inputStyle" v-model="commonValue" type="checkbox">&nbsp;
                 </label>
                 <dates-input v-if="type==='dates'" v-model="datesValue" :begin-ops="beginOps" :end-ops="endOps"
-                            :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" 
+                            :beginPlaceholder="beginPlaceholder" :endPlaceholder="endPlaceholder" @change="updateTime" :related="related"
                             :beginDisabled="beginDisabled" :endDisabled="endDisabled" :valueReadable="valueReadable"
                             :valueEndTransfered="valueEndTransfered"></dates-input>
                 <date-input v-if="type==='date'" v-model="datesValue" :placeholder="placeholder" @change="updateTime" 
@@ -109,6 +109,7 @@ export default {
         disabled: Boolean,     //是否禁用
         maxlength: [String, Number], //input最大长度限制
         defaultSelect: Boolean, //是否显示请选择一项
+        defaultValue: [String, Number],
         defaultText: String,
         placeholder: String,        
         beginPlaceholder: String, //dates组件placeholder
@@ -140,7 +141,8 @@ export default {
                     key: 'key', val: 'val'
                 };
             }
-        }
+        },
+        related: Boolean
     },
     data() {
         return {
@@ -242,6 +244,9 @@ export default {
         },
         filedvalue(){ //存在校验时需要校验对应的值
             if (!this.prop) return ;
+            if (this.type === 'date' || this.type === 'dates'){
+                return this.datesValue;
+            }
             return this.value;
         },
         isRequired(){ //是否为必填项
