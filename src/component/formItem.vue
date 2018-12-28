@@ -129,9 +129,7 @@ export default {
         keys: Array,
         showKeys: Array,       
         required: Boolean,
-        value: {type: [String, Number, Object, Array, Boolean], default: ()=>{
-            if (this.type !== 'checkbox') return undefined;
-        }},                    //v-model绑定值
+        value: [String, Number, Object, Array, Boolean],                    //v-model绑定值
         valueItem: Boolean,
         keyItem: Boolean,
         valueKey: {            //定义选择框、单选框、复选框的value key采用的字段名称
